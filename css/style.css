@@ -1,0 +1,58 @@
+.iframe-container{
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Ratio 16:9 ( 100%/16*9 = 56.25% ) */
+}
+.iframe-container > *{
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+/* Set the size of the div element that contains the map */
+#map {
+    width: 100%;
+}
+
+#infowindow-content-start .title {
+    font-weight: bold;
+}
+
+#infowindow-content-start {
+    display: none;
+}
+
+#map #infowindow-content-start {
+    display: inline;
+}
+
+#infowindow-content-dest .title {
+    font-weight: bold;
+}
+
+#infowindow-content-dest {
+    display: none;
+}
+
+#map #infowindow-content-dest {
+    display: inline;
+}
+
+.pac-controls {
+    display: inline-block;
+    padding: 5px 11px;
+}
+
+#title {
+    color: #fff;
+    background-color: #4d90fe;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 6px 12px;
+}
