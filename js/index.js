@@ -10,7 +10,7 @@ var rt_distance = 0;
 var rt_duration = 0;
 
 const g_names = ["Alex", "Mike", "Marc", "Jason"];
-const g_addrs = ["9 Brentwood Dr, McKees Rocks, PA 15136", "1 Alverston Ct, Irmo, SC 29063", "34 Park Road, Crownsville, MD 21032", "145 Hampden Park, Tiffin, OH 44883", ""];
+const g_addrs = ["9 Brentwood Dr McKees Rocks, PA 15136", "1 Alverston Ct, Irmo, SC 29063", "34 Park Road, Crownsville, MD 21032", "145 Hampden Park, Tiffin, OH 44883", ""];
 // Initialize and add the map
 
 function haversine_distance(mk1, mk2) {
@@ -76,40 +76,41 @@ function initMap() {
     infowindow_dest.setContent(infowindowContent_dest);
     
     autocomplete_start.addListener("place_changed", () => {
-        infowindow_start.close();
-        mk1.setVisible(false);
-        const place_start = autocomplete_start.getPlace();
-
-        if (!place_start.geometry || !place_start.geometry.location) {
-        // User entered the name of a Place that was not suggested and
-        // pressed the Enter key, or the Place Details request failed.
-        window.alert("No details available for input: '" + place_start.name + "'");
-        return;
-        }
-
-        // If the place has a geometry, then present it on a map.
-        if (place_start.geometry.viewport) {
-        //map.fitBounds(place_start.geometry.viewport);
-        } else {
-        //map.setCenter(place_start.geometry.location);
-        //map.setZoom(17);
-        }
-        mk1.setPosition(place_start.geometry.location);
-        mk1.setVisible(true);
-        infowindowContent_start.children["place-name-start"].textContent = place_start.name;
-        infowindowContent_start.children["place-address-start"].textContent = place_start.formatted_address;
-        infowindow_start.open(map, mk1);
-        g_mk1 = mk1;
         geocoder_start.geocode({'address': addr_start.value}, function(results, status){
             if (status == google.maps.GeocoderStatus.OK){
                 var latitude = results[0].geometry.location.lat();
                 var longitude = results[0].geometry.location.lng();
                 g_loc_start.lat = latitude;
                 g_loc_start.lng = longitude;
+
+                infowindow_start.close();
+                mk1.setVisible(false);
+                const place_start = results[0];
+
+                if (!place_start.geometry || !place_start.geometry.location) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place_start.name + "'");
+                return;
+                }
+
+                // If the place has a geometry, then present it on a map.
+                if (place_start.geometry.viewport) {
+                //map.fitBounds(place_start.geometry.viewport);
+                } else {
+                //map.setCenter(place_start.geometry.location);
+                //map.setZoom(17);
+                }
+                mk1.setPosition(place_start.geometry.location);
+                mk1.setVisible(true);
+                infowindowContent_start.children["place-name-start"].textContent = place_start.name;
+                infowindowContent_start.children["place-address-start"].textContent = place_start.formatted_address;
+                infowindow_start.open(map, mk1);
+                g_mk1 = mk1;
             }
         });
     });
-
+    setTimeout(()=>google.maps.event.trigger(autocomplete_start, 'place_changed'), 1000);
     autocomplete_dest.addListener("place_changed", () => {
         infowindow_dest.close();
         mk2.setVisible(false);

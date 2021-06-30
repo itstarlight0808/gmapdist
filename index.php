@@ -2,8 +2,9 @@
 <html>
 <head>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-        
+
     <script src="./libs/code.jquery.com/jquery-3.5.1.js"></script>
+    <link href="./css/fontawesome/font-awesome.min.css" rel="stylesheet">
     <link href="./libs/bootstrap-4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="./libs/bootstrap-4.5.2/js/bootstrap.min.js"></script>
 
@@ -84,18 +85,23 @@
                     <div class="col-md-4 mb-4">
                         <div class="form-group">
                             <div id="title">Autocomplete search</div>
-                            <div id="type-selector" class="pac-controls">
-                                <input type="radio" name="type" id="changetype-all" checked="checked"/>
-                                <label for="changetype-all">All</label>
-                
-                                <input type="radio" name="type" id="changetype-establishment" />
-                                <label for="changetype-establishment">Establishments</label>
-                
-                                <input type="radio" name="type" id="changetype-address" />
-                                <label for="changetype-address">Addresses</label>
-                
-                                <input type="radio" name="type" id="changetype-geocode" />
-                                <label for="changetype-geocode">Geocodes</label>
+                            <div id="type-selector" class="pac-controls d-flex flex-wrap justify-content-between">
+                                <div>
+                                    <input type="radio" name="type" id="changetype-all" checked="checked"/>
+                                    <label for="changetype-all">All</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="type" id="changetype-establishment" />
+                                    <label for="changetype-establishment">Establishments</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="type" id="changetype-address" />
+                                    <label for="changetype-address">Addresses</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="type" id="changetype-geocode" />
+                                    <label for="changetype-geocode">Geocodes</label>
+                                </div>
                             </div>
                             <div id="strict-bounds-selector" class="pac-controls">
                                 <input type="checkbox" id="use-location-bias" value="" checked />
@@ -221,7 +227,7 @@
                     <div class="col-md-12">
                         <div class="form-group" align="center">
                             <h5 id="msg"></h5>
-                            <h5 id="msg2"></h5>
+                            <h6 id="msg2"></h6>
                         </div>
                     </div>
                 </div>
@@ -231,10 +237,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group" align="center">
-                            <!--
-                            <button id="btn_expense_calc" class="btn btn-info" onclick="calc_distance_expense()">Calculate Expense</button>
-                            -->
-                            <button id="btn_info_submit" class="btn btn-success" onclick="delay_submit()">Submit</button>
+                            <button id="btn_reset" class="btn btn-danger" onclick="location.reload()"><i class="fa fa-undo"></i> Reset</button>
+                            <button id="btn_info_submit" class="btn btn-success ml-5" onclick="delay_submit()"><i class="fa fa-paper-plane"></i> Submit</button>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -267,7 +271,6 @@
             $("#pac-addr-start").val(g_addrs[cur_name_sel]);    
         });
         $("#pac-addr-start").val(g_addrs[cur_name_sel]);
-
         $("input[name='has_hotel']").click(function(){
             if (eval($(this).val()) == 1)
             {
@@ -312,15 +315,19 @@
                                     <input type="text" id="inp_expense_purpose_${index}" name="inp_expense_purpose" class="form-control" value="" maxlength="120"/>
                                 </div>
                             </div>
+                            <div class="col-md-2 m-auto pt-4" align="center">
+                                <input type="checkbox" id="isExpenseEmailed_${index}" name="isExpenseEmailed" onclick="selBillType(this, ${index})"/>
+                                <label for="isExpenseEmailed_${index}" style="color:blue">Emailed</label>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group" id="billImgType_div1_${index}">
                                     <label>Image of Bill: </label>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="form-group" id="billImgType_div2_${index}">
                                     <input type="radio" onclick="selectImageType(this, ${index})" id="bill_upload_${index}" name="bill_img_type_${index}" value="1" checked/>
                                     <label for="bill_upload_${index}">Image Upload&nbsp;&nbsp;
                                     <input type="radio" onclick="selectImageType(this, ${index})" id="bill_capture_${index}" name="bill_img_type_${index}" value="2"/>
@@ -334,7 +341,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" id="billImgCapture_div_${index}">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <img class="img-responsive" id="img_bill_${index}" name="img_bill_${index}" width="100%"/>
@@ -348,7 +355,7 @@
                                 <div class="form-group" id="bill_capture_div_${index}" style="display: none;">
                                     <div id="mycam_${index}"></div>
                                     <button class="btn btn-warning btn-lg" onclick="take_snapshot(${index})">
-                                        Capture
+                                        <i class="fa fa-camera"></i> Capture
                                     </button>
                                     <input type="hidden" id="image_captured_${index}" name="image_captured_${index}" class="image-tag" value=""/>
                                 </div>
@@ -368,6 +375,18 @@
         if (index > 2)
             $("#btn_expense_del_" + (index - 1)).show();
         $("#expense_" + index).remove();
+    }
+    function selBillType(e, index){
+        if(e.checked){
+            $("#billImgType_div1_"+index).hide();
+            $("#billImgType_div2_"+index).hide();
+            $("#billImgCapture_div_"+index).hide();
+        }
+        else{
+            $("#billImgType_div1_"+index).show();
+            $("#billImgType_div2_"+index).show();
+            $("#billImgCapture_div_"+index).show();
+        }
     }
     function selectImageType(e, index){
         if ($(e).val() == 1)
@@ -424,6 +443,8 @@
 
     function delay_submit()
     {
+        $("#btn_info_submit>i").attr('class', "fa fa-spinner fa-spin");
+
         calc_distance_expense();
         window.setTimeout(submit_trip_info, 3000);
     }
@@ -465,7 +486,10 @@
         var trip_note = $("#txt_note").val();
         var dist_msg = $("#msg").text();
         var bill_image = [];
-        $("input[id*='image_captured_']").filter(function(index, el){
+        $("input[id*='image_captured_']").filter(function(idx, el){
+            var index = $(this).attr('id').split('image_captured_')[1];
+            if(!$(this).val() || $("#isExpenseEmailed_"+index)[0].checked)
+                return;
             bill_image.push($(this).val());
         });
 
@@ -490,10 +514,12 @@
             },
             function(res)
             {
-                if (res == "success")
-                {
-                    $("#msg2").text("All of trip information has been sent to your email.");
-                }
+                $("#btn_info_submit>i").attr('class', "fa fa-paper-plane");
+                res = JSON.parse(res);
+                if(res.state==1)
+                    $("#msg2").text("All of trip information has been sent to your email.").css('color' ,'green');
+                else
+                    $("#msg2").text(res.msg).css('color', 'red');
             }
         );
     }

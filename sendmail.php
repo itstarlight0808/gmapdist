@@ -1,4 +1,11 @@
 <?php
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+
+    $baseurl = "https://mobileescaperoom.fun/gmapdist";
     if ($_POST)
     {
         //create a csv file with post data
@@ -54,14 +61,14 @@
         fclose($file);
         
         //upload the bill image
-        $bill_images = $_POST["bill_image"];
+        $bill_images = isset($_POST["bill_image"])?$_POST["bill_image"]:[];
         $target_dir = "bill_images";
         if (!is_dir($target_dir))
             mkdir($target_dir, 0777, true);
         $target_dir .= "/";
         $target_file = [];
         for($i=0; $i<count($bill_images); $i++){
-            $image_parts = explode(";base64,", $bill_images[i]);
+            $image_parts = explode(";base64,", $bill_images[$i]);
             $image_type_aux = explode("image/", $image_parts[0]);
             $image_type = $image_type_aux[1];
             $image_base64 = base64_decode($image_parts[1]);
@@ -73,7 +80,7 @@
         
         //send an email with an image and a csv file
         //$to_email = "aaue920921@gmail.com"; //Recipient email, Replace with own email here    
-        $to_email = "it_starlight0808@outlook.com";
+        $to_email = "fatiza.sazali2@gmail.com";
         //check if its an ajax request, exit if not
         if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
             
@@ -83,27 +90,47 @@
             ));
             die($output); //exit script outputting json data
         }
-        
-        //proceed with PHP email.
-        $headers = 'From: '. '' . "\r\n" .
-        'Reply-To: '. '' . "\r\n" .
-        'X-Mailer: PHP/' . phpversion();
 
         $subject = 'VER Trip-' . $_POST["pname"] . '-' . $_POST["pjob"] . '-' . $_POST["start_date"];
         $message = file_get_contents('email_body.html');
         $bill_images_div = "";
         for($i=0;$i<count($target_file);$i++)
-            $bill_images_div .= "<img src='https://mobileescaperoom.fun/gmapdist/".$target_file[$i]."' width='100%'/>"
+            $bill_images_div .= "<img src='cid:bill_image_$i' width='100%' alt='bill_image'/>";
         $message = strtr($message, array("{bill_images}" => $bill_images_div, "csv_info" => "https://mobileescaperoom.fun/gmapdist/" . $csv_filename));
 
-        $send_mail = mail($to_email, $subject, $message, $headers);
-        if ($send_mail)
-        {
-            echo "success";
-        }
-        else
-        {
-            echo "failed";
+        $mail = new PHPMailer(true);
+        try {
+           //Server settings
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            // $mail->isSMTP();                                            //Send using SMTP
+            // $mail->Host       = 'smtp.example.com';                     //Set the SMTP server to send through
+            // $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            // $mail->Username   = 'user@example.com';                     //SMTP username
+            // $mail->Password   = 'secret';                               //SMTP password
+            // $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            // $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+            //Recipients
+            $mail->setFrom('noreply@mobileescaperoom.fun', 'mobileescaperoom.fun');
+            $mail->addAddress('it_starlight0808@outlook.com', 'Joe User');     //Add a recipient
+            $mail->addAddress('fatiza.sazali2@gmail.com');               //Name is optional
+            // $mail->addReplyTo('from@example.com', 'mobileescaperoom.fun Mailer');
+            // $mail->addCC('cc@example.com');
+            // $mail->addBCC('bcc@example.com');
+
+            //Attachments
+            // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+            // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = $subject;
+            $mail->Body    = $message;
+            $mail->AltBody = 'You have unread message from mobileescaperoom.fun gmapdist travel app...';
+            for($i=0;$i<count($target_file);$i++)
+                $mail->addEmbeddedImage($target_file[$i], "bill_image_$i");
+            $mail->send();
+            echo json_encode(array("state"=>1, "msg"=>'Message has been sent'));
+        } catch (Exception $e) {
+            echo json_encode(array("state"=>0, "msg"=>"Message could not be sent. Mailer Error: {$mail->ErrorInfo}"));
         }
         exit();
     } 
