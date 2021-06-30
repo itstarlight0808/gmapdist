@@ -250,7 +250,7 @@
     </div>
     <!--Load the API from the specified URL -- remember to replace YOUR_API_KEY-->
     
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlF-d3rdfefTmBKRYTsXlm_b0lT1PkVf8&libraries=places&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=API-KEY&libraries=places&callback=initMap"></script>
     
 </body>
 </html>
