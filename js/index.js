@@ -9,6 +9,8 @@ var unit_mile = 1609;
 var rt_distance = 0;
 var rt_duration = 0;
 
+var autocomplete_start=null, autocomplete_dest=null;
+
 const g_names = ["Alex", "Mike", "Marc", "Jason"];
 const g_addrs = ["9 Brentwood Dr McKees Rocks, PA 15136", "1 Alverston Ct, Irmo, SC 29063", "34 Park Road, Crownsville, MD 21032", "145 Hampden Park, Tiffin, OH 44883", ""];
 // Initialize and add the map
@@ -58,8 +60,8 @@ function initMap() {
     const addr_start = document.getElementById("pac-addr-start");
     const addr_dest = document.getElementById("pac-addr-dest");
 
-    const autocomplete_start = new google.maps.places.Autocomplete(addr_start, options);
-    const autocomplete_dest = new google.maps.places.Autocomplete(addr_dest, options);
+    autocomplete_start = new google.maps.places.Autocomplete(addr_start, options);
+    autocomplete_dest = new google.maps.places.Autocomplete(addr_dest, options);
 
     // Bind the map's bounds (viewport) property to the autocomplete object,
     // so that the autocomplete requests use the current map bounds for the
@@ -110,7 +112,7 @@ function initMap() {
             }
         });
     });
-    setTimeout(()=>google.maps.event.trigger(autocomplete_start, 'place_changed'), 1000);
+    setTimeout(()=>google.maps.event.trigger(autocomplete_start, 'place_changed'), 500);
     autocomplete_dest.addListener("place_changed", () => {
         infowindow_dest.close();
         mk2.setVisible(false);

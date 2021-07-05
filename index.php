@@ -183,6 +183,41 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" id="billImgType_div1_0">
+                                <label>Image of Bill: </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" id="billImgType_div2_0">
+                                <input type="radio" onclick="selectImageType(this, 0)" id="bill_upload_0" name="bill_img_type_0" value="1" checked/>
+                                <label for="bill_upload_0">Image Upload&nbsp;&nbsp;
+                                <input type="radio" onclick="selectImageType(this, 0)" id="bill_capture_0" name="bill_img_type_0" value="2"/>
+                                <label for="bill_capture_0">Live Capture</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="billImgCapture_div_0">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <img class="img-responsive" id="img_bill_0" name="img_bill_0" width="100%"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" id="bill_upload_div_0">
+                                <label for="img_upload">Image for Upload: </label>
+                                <input accept="image/jpeg, image/png" autocomplete="off" type="file" tabindex="-1" class="form-control" onchange="uploadImageFile(this, 0)"/>
+                            </div>
+                            <div class="form-group" id="bill_capture_div_0" style="display: none;">
+                                <div id="mycam_0"></div>
+                                <button class="btn btn-warning btn-lg" onclick="take_snapshot(0)">
+                                    <i class="fa fa-camera"></i> Capture
+                                </button>
+                                <input type="hidden" id="image_captured_0" name="image_captured_0" class="image-tag" value=""/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <div class="row">
@@ -250,7 +285,7 @@
     </div>
     <!--Load the API from the specified URL -- remember to replace YOUR_API_KEY-->
     
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=API-KEY&libraries=places&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlF-d3rdfefTmBKRYTsXlm_b0lT1PkVf8&libraries=places&callback=initMap"></script>
     
 </body>
 </html>
@@ -268,7 +303,8 @@
                 $("#inp_name_other").show();
             else
                 $("#inp_name_other").hide();
-            $("#pac-addr-start").val(g_addrs[cur_name_sel]);    
+            $("#pac-addr-start").val(g_addrs[cur_name_sel]);
+            google.maps.event.trigger(autocomplete_start, 'place_changed')
         });
         $("#pac-addr-start").val(g_addrs[cur_name_sel]);
         $("input[name='has_hotel']").click(function(){
@@ -292,7 +328,7 @@
                 $("#expense_info").slideUp("slow");
             }
         });
-
+        set_webcam(0);
         add_expense_item(1);
     });
 
@@ -486,9 +522,9 @@
         var trip_note = $("#txt_note").val();
         var dist_msg = $("#msg").text();
         var bill_image = [];
-        $("input[id*='image_captured_']").filter(function(idx, el){
+        $("input[id*='image_captured_']").each(function(idx, el){
             var index = $(this).attr('id').split('image_captured_')[1];
-            if(!$(this).val() || $("#isExpenseEmailed_"+index)[0].checked)
+            if(index>0 && (!$(this).val() || $("#isExpenseEmailed_"+index)[0].checked))
                 return;
             bill_image.push($(this).val());
         });

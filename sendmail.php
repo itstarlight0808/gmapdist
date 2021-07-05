@@ -20,44 +20,45 @@
         // create a file pointer connected to the output stream
         //$file = fopen('php://output', 'wb');
 
+        $delimiter = '\t';
         $csv_filename = 'downloads/VER Trip-' . $_POST["pname"] . '-' . $_POST["pjob"] . '-' . $_POST["start_date"] . '.csv';
         $file = fopen($csv_filename, 'wb');
         // send the column headers
-        fputcsv($file, array('Name: ' . $_POST["pname"]));
-        fputcsv($file, array('Job Name: ' . $_POST["pjob"]));
-        fputcsv($file, array('Start Date: ' . $_POST["start_date"]));
-        fputcsv($file, array('Rooms for Job: ' . $_POST["job_rooms"]));
-        fputcsv($file, array('Job Hours: ' . $_POST["job_hours"]));
+        fputcsv($file, array('Name:', $_POST["pname"]));
+        fputcsv($file, array('Job Name:', $_POST["pjob"]));
+        fputcsv($file, array('Start Date:', $_POST["start_date"]));
+        fputcsv($file, array('Rooms for Job:', $_POST["job_rooms"]));
+        fputcsv($file, array('Job Hours:', $_POST["job_hours"]));
         $has_hotel = intval($_POST["has_hotel"]);
         if ($has_hotel == 0)
         {
-            fputcsv($file, array('Hotel: No'));
+            fputcsv($file, array('Hotel:', 'No'));
         }
         else
         {
-            fputcsv($file, array('Hotel: Yes'));
-            fputcsv($file, array('Name of Hotel: ' . $_POST['hotel_name']));
-            fputcsv($file, array('Nights stayed: ' . $_POST['hotel_stayed']));
+            fputcsv($file, array('Hotel:', 'Yes'));
+            fputcsv($file, array('Name of Hotel:', $_POST['hotel_name']));
+            fputcsv($file, array('Nights stayed:', $_POST['hotel_stayed']));
         }
         $has_add_expense = intval($_POST["has_add_expense"]);
         if ($has_hotel == 0)
         {
-            fputcsv($file, array('Add an additional expense (excluding meals): No'));
+            fputcsv($file, array('Add an additional expense (excluding meals):','No'));
         }
         else
         {
-            fputcsv($file, array('Add an additional expense (excluding meals): Yes'));
-            fputcsv($file, array('Name of company/person paid: ' . $_POST['paid_name']));
+            fputcsv($file, array('Add an additional expense (excluding meals):', 'Yes'));
+            fputcsv($file, array('Name of company/person paid:', $_POST['paid_name']));
             $arr_expense_amount = explode("^", $_POST["expense_amount"]);
             $arr_expense_purpose = explode("^", $_POST["expense_purpose"]);
             for ($i=0; $i<count($arr_expense_amount); $i++)
             {
-                fputcsv($file, array('Amount: ' . $arr_expense_amount[$i]));
-                fputcsv($file, array('Purpose: ' . $arr_expense_purpose[$i]));
+                fputcsv($file, array('Amount:', $arr_expense_amount[$i]));
+                fputcsv($file, array('Purpose:', $arr_expense_purpose[$i]));
             }
         }
-        fputcsv($file, array('Trip Note: ' . $_POST["trip_note"]));
-        fputcsv($file, array('Calculated distance: ' . $_POST["dist_msg"]));
+        fputcsv($file, array('Trip Note:', $_POST["trip_note"]));
+        fputcsv($file, array('Calculated distance:', $_POST["dist_msg"]));
         fclose($file);
         
         //upload the bill image
@@ -112,7 +113,8 @@
             //Recipients
             $mail->setFrom('noreply@mobileescaperoom.fun', 'mobileescaperoom.fun');
             $mail->addAddress('it_starlight0808@outlook.com', 'Joe User');     //Add a recipient
-            $mail->addAddress('fatiza.sazali2@gmail.com');               //Name is optional
+            $mail->addAddress('jasonbock801@gmail.com');               //Name is optional
+            // $mail->addAddress('fatiza.sazali2@gmail.com');
             // $mail->addReplyTo('from@example.com', 'mobileescaperoom.fun Mailer');
             // $mail->addCC('cc@example.com');
             // $mail->addBCC('bcc@example.com');
